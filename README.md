@@ -1,6 +1,6 @@
 ![logo](/public/brand.png)
 
-# Veterinaria 'Caninos'
+# Veterinaria 'Caninos' (PROYECTO EN PROGRESO)
 
 ## Descripción
 
