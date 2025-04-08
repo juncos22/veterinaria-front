@@ -17,3 +17,16 @@ Esta aplicación web consume lo que sería el API REST de [Veterinaria-API](http
 6. Página Registro de Usuarios ✖️
 7. Página Login de Usuarios ✖️
 8. Manejo de sesiones de usuario ✖️
+
+## Project setup
+```bash
+$ pnpm install
+```
+
+## Compile and run the project
+```bash
+# development
+$ pnpm run dev
+# build
+$ pnpm run build
+```
