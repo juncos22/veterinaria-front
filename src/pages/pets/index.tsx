@@ -26,6 +26,15 @@ export default function PetsPage() {
             <Card key={pet.id} pet={pet} />
           ))}
         </div>
+
+        <a
+          className="fixed right-0 mr-5 group inline-block rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 p-[2px] hover:text-white focus:ring-3 focus:outline-hidden"
+          href="/pets/new"
+        >
+          <span className="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent">
+            Nueva Mascota
+          </span>
+        </a>
       </>
     </Layout>
   );

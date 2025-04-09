@@ -1,7 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { CreatePetDTO } from "../utils/types";
-import { breeds, genders } from "../utils/mock/data";
-import { validateForm } from "../utils/validations/pet-form";
+import { genders } from "../utils/mock/data";
+import usePetStore from "../store/petStore";
+// import { validateForm } from "../utils/validations/pet-form";
 
 type PetFormProps = {
   onSubmit: (form: CreatePetDTO) => Promise<void>;
@@ -9,7 +10,11 @@ type PetFormProps = {
 
 export const PetForm = ({ onSubmit }: PetFormProps) => {
   const [petForm, setPetForm] = useState<CreatePetDTO>({});
+  const { breeds, getPetBreeds } = usePetStore();
   //   const [formDisabled, setFormDisabled] = useState(true);
+  useEffect(() => {
+    getPetBreeds();
+  }, []);
 
   const handleForm = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     console.log(e.target.name, e.target.value);

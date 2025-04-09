@@ -1,18 +1,16 @@
 import React from "react";
 
 type AlertProps = {
-  color: string;
-  bg: string;
+  extraClasses?: string;
   title: string;
   text: string;
-  size: number;
 };
 
-export const Alert = ({ bg, color, text, title, size }: AlertProps) => {
+export const Alert = ({ text, title, extraClasses }: AlertProps) => {
   return (
     <div
       role="alert"
-      className={`rounded-md border border-${color}-300 bg-${bg} p-4 shadow-sm w-fit mx-auto my-5`}
+      className={`rounded-md border p-4 h-auto shadow-sm w-fit mx-auto my-5 ${extraClasses}`}
     >
       <div className="flex items-start gap-4">
         <svg
@@ -21,7 +19,7 @@ export const Alert = ({ bg, color, text, title, size }: AlertProps) => {
           viewBox="0 0 24 24"
           strokeWidth="1.5"
           stroke="currentColor"
-          className={`size-${size} text-${color}-600`}
+          className={`size-10 text-orange-600`}
         >
           <path
             strokeLinecap="round"
@@ -31,8 +29,8 @@ export const Alert = ({ bg, color, text, title, size }: AlertProps) => {
         </svg>
 
         <div className="flex-1">
-          <strong className="font-medium text-gray-900">{title} </strong>
-          <p className="mt-0.5 text-sm text-gray-700">{text}</p>
+          <strong className="font-medium text-black">{title} </strong>
+          <p className="mt-0.5 text-sm text-black">{text}</p>
         </div>
       </div>
     </div>

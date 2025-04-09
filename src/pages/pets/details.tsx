@@ -1,13 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import usePetStore from "../../store/petStore";
 import { Layout } from "../../components/layout";
 import { Loader } from "../../components/loader";
 import { Alert } from "../../components/alert";
+import { DialogComponent } from "../../components/dialog";
+import { MedicationForm } from "../../components/medication-form";
+import useMedicationStore from "../../store/medicationStore";
 
 export default function PetDetailsPage() {
   const { pet, loading, error, getOnePet } = usePetStore();
+  const state = useMedicationStore();
   const params = useParams();
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -20,32 +25,97 @@ export default function PetDetailsPage() {
       <>
         {loading && <Loader bg="orange" color="green" size={50} />}
         {error && (
-          <Alert bg="red" color="black" size={10} text={error} title="Error" />
+          <Alert
+            extraClasses="bg-red-500 text-black size-10"
+            text={error}
+            title="Error"
+          />
         )}
         {pet && (
           <div>
             <h3 className="text-3xl text-orange-800 text-center">
               Datos de la Mascota
             </h3>
-            <div className="flex items-start justify-between flex-wrap">
-              <div className="flex flex-col items-start w-fit ml-10">
-                <span>Nombre: {pet.pet}</span>
-                <span>
-                  Género: {pet.gender === "Male" ? "Masculino" : "Femenino"}
-                </span>
-                <span>Raza: {pet.breed}</span>
-                <span>Dueño: {pet.owner}</span>
+            <div className="flex flex-wrap gap-y-5 items-center md:items-start justify-center md:justify-between">
+              <div className="flex flex-col items-center md:items-start w-fit ml-10 mt-3">
+                <div>
+                  <span className="text-orange-500 font-bold">Nombre: </span>{" "}
+                  <span>{pet.pet}</span>
+                </div>
+                <div>
+                  <span className="text-orange-500 font-bold">Género:</span>{" "}
+                  <span>
+                    {pet.gender === "Male" ? "Masculino" : "Femenino"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-orange-500 font-bold">Raza:</span>{" "}
+                  <span>{pet.breed}</span>
+                </div>
+                <div>
+                  <span className="text-orange-500 font-bold">Dueño: </span>{" "}
+                  <span>{pet.owner}</span>
+                </div>
               </div>
-              <div className="flex flex-col items-start w-fit mr-10">
-                <h4 className="text-2xl text-center">Medicación/es: </h4>
-                {pet.medication ? (
-                  <span>{pet.medication}</span>
+              <div className="flex flex-col items-center md:items-end w-fit mr-10 mt-3">
+                <span className="text-xl">Medicación/es: </span>
+                {pet.medications && pet.medications.length > 0 ? (
+                  <div className="flex flex-wrap">
+                    {pet.medications.map((m) => (
+                      <span
+                        key={m}
+                        className="rounded-full my-3 bg-orange-100 px-2.5 py-0.5 text-sm whitespace-nowrap text-orange-700"
+                      >
+                        {m}
+                      </span>
+                    ))}
+                  </div>
                 ) : (
                   <span>No tiene</span>
                 )}
               </div>
             </div>
           </div>
+        )}
+        <button
+          className="border border-orange-600 rounded-2xl px-3 hover:bg-orange-600 hover:text-white font-medium text-orange-600 md:right-0 md:fixed mr-5 mb-3 cursor-pointer"
+          onClick={() => {
+            setOpenModal(true);
+          }}
+        >
+          Nueva Medicación
+        </button>
+        <DialogComponent
+          isOpen={openModal}
+          onClose={() => setOpenModal(false)}
+          title="Nueva Medicación"
+        >
+          <MedicationForm
+            onSubmit={async (form) => {
+              form = { ...form, petId: pet?.id };
+              // console.log(form);
+              setOpenModal(false);
+              await state.saveMedication(form);
+              if (!state.error) {
+                getOnePet(pet?.id!);
+              }
+            }}
+          />
+        </DialogComponent>
+        {state.loading && <Loader bg="orange" color="black" size={30} />}
+        {state.error && (
+          <Alert
+            extraClasses="size-10 bg-red-500 text-black"
+            text={state.error}
+            title="Error"
+          />
+        )}
+        {state.message && (
+          <Alert
+            extraClasses="size-10 bg-green-500 text-black"
+            text={state.message}
+            title="Exito"
+          />
         )}
       </>
     </Layout>

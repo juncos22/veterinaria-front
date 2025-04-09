@@ -19,15 +19,17 @@ export default function AddPetPage() {
 
         {message && (
           <Alert
-            bg="orange"
-            color="green"
-            size={8}
+            extraClasses="bg-green-500 text-black size-10"
             text={message}
             title="Registro de mascota"
           />
         )}
         {error && (
-          <Alert bg="red" color="orange" size={8} text={error} title="Error" />
+          <Alert
+            extraClasses="bg-red-500 text-black size-10"
+            text={error}
+            title="Error"
+          />
         )}
         {loading && <Loader bg="orange" color="green" size={50} />}
         <PetForm

@@ -33,5 +33,10 @@ export interface PetList {
   gender: string;
   breed: string;
   owner: string;
-  medication: string;
+  medications: string[];
+}
+
+export interface CreateMedicationDTO {
+  name?: string;
+  petId?: number;
 }
