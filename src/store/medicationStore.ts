@@ -21,6 +21,12 @@ const useMedicationStore = create<MedicationState>((set) => ({
         loading: false,
         message: "Medicación guardada exitosamente",
       }));
+      setTimeout(() => {
+        set((state) => ({
+          ...state,
+          message: undefined,
+        }));
+      }, 3000);
     } catch (error: any) {
       console.log(error);
       set((state) => ({
