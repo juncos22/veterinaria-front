@@ -1,8 +1,7 @@
 import axios from "axios";
-import { environtments } from "./environments";
 
 const api = axios.create({
-  baseURL: environtments.PRODUCTION,
+  baseURL: "https://127.0.0.1:3001",
 });
 
 export default api;

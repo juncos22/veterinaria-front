@@ -1,16 +1,8 @@
 FROM node:20.13.1-alpine
-
 WORKDIR /app
-
 COPY package.json .
-
-RUN npm install -g pnpm@latest
-
 COPY . .
-
-RUN pnpm install
-RUN pnpm run build
-
+RUN npm install
+RUN npm run build
+CMD [ "npm", "run", "dev" ]
 EXPOSE 8080
-
-CMD [ "pnpm", "run", "preview" ]
