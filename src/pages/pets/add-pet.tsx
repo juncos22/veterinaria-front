@@ -1,4 +1,3 @@
-import React from "react";
 import { PetForm } from "../../components/pet-form";
 import usePetStore from "../../store/petStore";
 import { Loader } from "../../components/loader";

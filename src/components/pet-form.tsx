@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { CreatePetDTO } from "../utils/types";
 import { genders } from "../utils/mock/data";
 import usePetStore from "../store/petStore";
+import { Alert } from "./alert";
 // import { validateForm } from "../utils/validations/pet-form";
 
 type PetFormProps = {
@@ -10,7 +11,7 @@ type PetFormProps = {
 
 export const PetForm = ({ onSubmit }: PetFormProps) => {
   const [petForm, setPetForm] = useState<CreatePetDTO>({});
-  const { breeds, getPetBreeds } = usePetStore();
+  const { breeds, getPetBreeds, error } = usePetStore();
   //   const [formDisabled, setFormDisabled] = useState(true);
   useEffect(() => {
     getPetBreeds();
@@ -118,6 +119,9 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
           </button>
         </div>
       </dl>
+      {error && (
+        <Alert title="Error" text={error} extraClasses="size-8 color-red" />
+      )}
     </form>
   );
 };

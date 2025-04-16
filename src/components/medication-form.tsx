@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import  { ChangeEvent, useState } from "react";
 import { CreateMedicationDTO } from "../utils/types";
 
 type MedicationFormProps = {

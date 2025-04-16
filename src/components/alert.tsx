@@ -1,4 +1,3 @@
-import React from "react";
 
 type AlertProps = {
   extraClasses?: string;

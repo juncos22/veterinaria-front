@@ -4,7 +4,7 @@ type LoaderProps = {
   bg: string;
 };
 
-export const Loader = ({ size, color, bg }: LoaderProps) => {
+export const Loader = ({ size, color }: LoaderProps) => {
   // console.log({ size, color, bg });
 
   return (

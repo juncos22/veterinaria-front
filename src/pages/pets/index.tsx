@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { Layout } from "../../components/layout";
 // import { pets } from "../utils/mock/data";
 import { Card } from "../../components/card";

@@ -21,16 +21,18 @@ const usePetStore = create<PetState>((set) => ({
   loading: false,
   async getPetBreeds() {
     try {
+      console.log(api.getUri());
       const response = await api.get<Breed[]>(`/breeds`);
       set((state) => ({ ...state, breeds: response.data }));
     } catch (error: any) {
-      console.log(error);
+      console.log(error.message);
+      set((state) => ({ ...state, error: error.message }));
     }
   },
   async getAllPets(data) {
     try {
       set((state) => ({ ...state, loading: true }));
-      let params = data ? `?q=${data}` : "";
+      const params = data ? `?q=${data}` : "";
       const response = await api.get<PetList[]>(`/pets${params}`);
       // console.log(response.data);
       set((state) => ({ ...state, pets: response.data, loading: false }));
