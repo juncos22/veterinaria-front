@@ -1,3 +1,4 @@
+import useAuthStore from "../store/authStore";
 
 type CTAComponentProps = {
   title: string;
@@ -6,6 +7,7 @@ type CTAComponentProps = {
 };
 
 export const CTAComponent = ({ body, title, image }: CTAComponentProps) => {
+  const { authenticated } = useAuthStore();
   return (
     <section className="overflow-hidden bg-gray-50 sm:grid sm:grid-cols-2">
       <div className="p-8 md:p-12 lg:px-16 lg:py-24">
@@ -18,7 +20,7 @@ export const CTAComponent = ({ body, title, image }: CTAComponentProps) => {
 
           <div className="mt-4 md:mt-8">
             <a
-              href="/pets/new"
+              href={authenticated ? "/pets/new" : "/auth/login"}
               className="inline-block rounded-sm bg-emerald-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-emerald-700 focus:ring-3 focus:ring-yellow-400 focus:outline-hidden"
             >
               Comenzá ya!

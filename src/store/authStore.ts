@@ -13,7 +13,7 @@ type AuthState = {
 
 const useAuthStore = create<AuthState>((set) => ({
   loading: false,
-  authenticated: false,
+  authenticated: localStorage.getItem("auth") !== null,
   authResponse: {},
   async login(form) {
     try {
@@ -26,14 +26,25 @@ const useAuthStore = create<AuthState>((set) => ({
         ...state,
         loading: false,
         authenticated: true,
-        authResponse: response.data,
+        authResponse: JSON.parse(localStorage.getItem("auth")!) as AuthResponse,
       }));
     } catch (error: any) {
       console.log("Auth error:", error);
       set((state) => ({ ...state, loading: false, error: error.message }));
     }
   },
-  async signOut() {},
+  async signOut() {
+    try {
+      localStorage.removeItem("auth");
+      set((state) => ({
+        ...state,
+        authenticated: localStorage.getItem("auth") !== null,
+      }));
+    } catch (error: any) {
+      console.log(error);
+      set((state) => ({ ...state, loading: false, error: error.message }));
+    }
+  },
 }));
 
 export default useAuthStore;

@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { Breed, CreatePetDTO, Pet, PetList } from "../utils/types";
+import {
+  Breed,
+  CreatePetDTO,
+  Pet,
+  PetList,
+} from "../utils/types";
 import api from "../api/config";
 
 type PetState = {

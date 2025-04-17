@@ -1,10 +1,12 @@
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { LoginUserDTO } from "../utils/types";
+import useAuthStore from "../store/authStore";
 
 type LoginFormProps = {
   onSubmit: (data: LoginUserDTO) => Promise<void>;
 };
 export const LoginForm = ({ onSubmit }: LoginFormProps) => {
+  const { loading } = useAuthStore();
   const [userForm, setUserForm] = useState<LoginUserDTO>({
     email: "",
     password: "",
@@ -62,7 +64,8 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
 
           <button
             type="submit"
-            className="group w-full text-center text-orange-500 my-5 inline-block rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-[2px] hover:text-white cursor-pointer focus:ring-3 focus:outline-hidden"
+            disabled={loading}
+            className="group w-full text-center text-orange-500 my-5 inline-block rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-[2px] hover:text-white cursor-pointer focus:ring-3 focus:outline-hidden disabled:bg-gray-500"
           >
             <span className="block rounded-full bg-white px-8 py-3 text-md font-bold group-hover:bg-transparent">
               Ingresar

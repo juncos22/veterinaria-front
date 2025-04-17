@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import usePetStore from "../../store/petStore";
 import { Layout } from "../../components/layout";
 import { Loader } from "../../components/loader";
@@ -7,14 +7,20 @@ import { Alert } from "../../components/alert";
 import { DialogComponent } from "../../components/dialog";
 import { MedicationForm } from "../../components/medication-form";
 import useMedicationStore from "../../store/medicationStore";
+import useAuthStore from "../../store/authStore";
 
 export default function PetDetailsPage() {
   const { pet, loading, error, getOnePet } = usePetStore();
   const state = useMedicationStore();
+  const { authenticated } = useAuthStore();
   const params = useParams();
   const [openModal, setOpenModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!authenticated) {
+      navigate("/");
+    }
     if (params.id) {
       getOnePet(parseInt(params.id));
     }
