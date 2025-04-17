@@ -5,8 +5,9 @@ import App from "./App";
 import PetsPage from "./pages/pets/index";
 import AddPetPage from "./pages/pets/add-pet";
 import PetDetailsPage from "./pages/pets/details";
+import LoginPage from "./pages/auth/login";
 
-let router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     Component: App,
@@ -17,6 +18,7 @@ let router = createBrowserRouter([
   },
   { path: "/pets/new", Component: AddPetPage },
   { path: "/pets/:id", Component: PetDetailsPage },
+  { path: "/auth/login", Component: LoginPage },
 ]);
 
 createRoot(document.getElementById("root")!).render(

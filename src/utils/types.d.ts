@@ -40,3 +40,14 @@ export interface CreateMedicationDTO {
   name?: string;
   petId?: number;
 }
+
+export interface LoginUserDTO {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  email?: string;
+  name?: string;
+  token?: string;
+}

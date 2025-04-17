@@ -1,5 +1,7 @@
+import useAuthStore from "../store/authStore";
 
 export const NavMenu = () => {
+  const { authenticated } = useAuthStore();
   return (
     <nav className="bg-orange-800 w-full h-fit py-3 px-3">
       <a href="/">
@@ -18,9 +20,11 @@ export const NavMenu = () => {
           <a href="/pets">Mascotas</a>
         </li>
         {/* Manejo de cuentas de usuario en caso de loguearse */}
-        <li className="hover:text-orange-300 cursor-pointer transition-colors delay-75">
-          Ingresar
-        </li>
+        {!authenticated && (
+          <li className="hover:text-orange-300 cursor-pointer transition-colors delay-75">
+            <a href="/auth/login">Ingresar</a>
+          </li>
+        )}
       </ul>
     </nav>
   );
