@@ -4,10 +4,18 @@ import { Loader } from "../../components/loader";
 import { Alert } from "../../components/alert";
 import { useNavigate } from "react-router";
 import { Layout } from "../../components/layout";
+import useAuthStore from "../../store/authStore";
+import { useEffect } from "react";
 
 export default function AddPetPage() {
   const { loading, savePet, message, error } = usePetStore();
+  const authState = useAuthStore();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!authState.authenticated) {
+      navigate("/");
+    }
+  }, [authState.authenticated]);
 
   return (
     <Layout>
@@ -33,7 +41,7 @@ export default function AddPetPage() {
         {loading && <Loader bg="orange" color="green" size={50} />}
         <PetForm
           onSubmit={async (form) => {
-            await savePet({ ...form, ownerId: 1 });
+            await savePet({ ...form, ownerId: authState.authResponse.id });
             if (!error) {
               setTimeout(() => {
                 navigate("/pets");

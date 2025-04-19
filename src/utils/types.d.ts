@@ -45,8 +45,14 @@ export interface LoginUserDTO {
   email: string;
   password: string;
 }
+export interface RegisterUserDTO {
+  name: string;
+  email: string;
+  password: string;
+}
 
 export interface AuthResponse {
+  id?: number;
   email?: string;
   name?: string;
   token?: string;

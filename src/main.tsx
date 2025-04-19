@@ -6,6 +6,7 @@ import PetsPage from "./pages/pets/index";
 import AddPetPage from "./pages/pets/add-pet";
 import PetDetailsPage from "./pages/pets/details";
 import LoginPage from "./pages/auth/login";
+import RegisterPage from "./pages/auth/register";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
   { path: "/pets/new", Component: AddPetPage },
   { path: "/pets/:id", Component: PetDetailsPage },
   { path: "/auth/login", Component: LoginPage },
+  { path: "/auth/register", Component: RegisterPage },
 ]);
 
 createRoot(document.getElementById("root")!).render(

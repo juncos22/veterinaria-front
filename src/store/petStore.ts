@@ -1,10 +1,5 @@
 import { create } from "zustand";
-import {
-  Breed,
-  CreatePetDTO,
-  Pet,
-  PetList,
-} from "../utils/types";
+import { Breed, CreatePetDTO, Pet, PetList } from "../utils/types";
 import api from "../api/config";
 
 type PetState = {
@@ -26,7 +21,6 @@ const usePetStore = create<PetState>((set) => ({
   loading: false,
   async getPetBreeds() {
     try {
-      console.log(api.getUri());
       const response = await api.get<Breed[]>(`/breeds`);
       set((state) => ({ ...state, breeds: response.data }));
     } catch (error: any) {

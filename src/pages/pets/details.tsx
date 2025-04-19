@@ -103,7 +103,9 @@ export default function PetDetailsPage() {
               setOpenModal(false);
               await state.saveMedication(form);
               if (!state.error) {
-                getOnePet(pet?.id!);
+                if (pet?.id) {
+                  getOnePet(pet?.id);
+                }
               }
             }}
           />
