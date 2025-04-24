@@ -2,28 +2,25 @@ export interface Breed {
   id?: number;
   name: string;
 }
-export interface Gender {
-  id?: number;
-  name: string;
-}
+
 export interface Owner {
   id?: number;
-  name: string;
-  email: string;
-  password: string;
+  fullName: string;
+  phone: string;
+  address: string;
 }
 export interface Pet {
   id?: number;
   name: string;
   breed?: Breed;
-  gender?: Gender;
+  gender?: string;
   owner?: Owner;
 }
 
 export interface CreatePetDTO {
   name?: string;
   breedId?: number;
-  genderId?: number;
+  genderId?: string;
   ownerId?: number;
 }
 

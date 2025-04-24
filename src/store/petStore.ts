@@ -1,15 +1,17 @@
 import { create } from "zustand";
-import { Breed, CreatePetDTO, Pet, PetList } from "../utils/types";
+import { Breed, CreatePetDTO, Owner, Pet, PetList } from "../utils/types";
 import api from "../api/config";
 
 type PetState = {
   pets: PetList[];
   pet?: PetList;
   breeds: Breed[];
+  owners: Owner[];
   error?: string;
   loading: boolean;
   message?: string;
   getPetBreeds: () => Promise<void>;
+  getPetOwners: () => Promise<void>;
   getAllPets: (data?: string) => Promise<void>;
   savePet: (data: CreatePetDTO) => Promise<void>;
   getOnePet: (id: number) => Promise<void>;
@@ -18,11 +20,21 @@ type PetState = {
 const usePetStore = create<PetState>((set) => ({
   pets: [],
   breeds: [],
+  owners: [],
   loading: false,
   async getPetBreeds() {
     try {
       const response = await api.get<Breed[]>(`/breeds`);
       set((state) => ({ ...state, breeds: response.data }));
+    } catch (error: any) {
+      console.log(error.message);
+      set((state) => ({ ...state, error: error.message }));
+    }
+  },
+  async getPetOwners() {
+    try {
+      const response = await api.get<Owner[]>("/owners");
+      set((state) => ({ ...state, owners: response.data }));
     } catch (error: any) {
       console.log(error.message);
       set((state) => ({ ...state, error: error.message }));

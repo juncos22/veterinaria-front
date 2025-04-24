@@ -50,9 +50,7 @@ export default function PetDetailsPage() {
                 </div>
                 <div>
                   <span className="text-orange-500 font-bold">Género:</span>{" "}
-                  <span>
-                    {pet.gender === "Male" ? "Masculino" : "Femenino"}
-                  </span>
+                  <span>{pet.gender === "M" ? "Masculino" : "Femenino"}</span>
                 </div>
                 <div>
                   <span className="text-orange-500 font-bold">Raza:</span>{" "}

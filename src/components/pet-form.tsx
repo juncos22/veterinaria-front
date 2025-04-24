@@ -11,10 +11,11 @@ type PetFormProps = {
 
 export const PetForm = ({ onSubmit }: PetFormProps) => {
   const [petForm, setPetForm] = useState<CreatePetDTO>({});
-  const { breeds, getPetBreeds, error } = usePetStore();
+  const { breeds, getPetBreeds, getPetOwners, owners, error } = usePetStore();
   //   const [formDisabled, setFormDisabled] = useState(true);
   useEffect(() => {
     getPetBreeds();
+    getPetOwners();
   }, []);
 
   const handleForm = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -30,6 +31,7 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        console.log(petForm);
         onSubmit(petForm);
       }}
       className="block rounded-md border border-gray-300 p-4 shadow-sm sm:p-6 w-fit mx-auto"
@@ -103,6 +105,28 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
               {breeds.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="my-5">
+          <label htmlFor="Owner">
+            <span className="text-sm font-medium text-orange-700"> Dueño </span>
+
+            <select
+              name="ownerId"
+              id="Owner"
+              required
+              value={petForm.ownerId}
+              onChange={handleForm}
+              className="mt-0.5 w-full text-center h-10 rounded border border-orange-300 shadow-sm sm:text-sm"
+            >
+              <option value="0">Dueño</option>
+              {owners.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.fullName}
                 </option>
               ))}
             </select>

@@ -8,13 +8,16 @@ export const NavMenu = () => {
       <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="md:flex md:items-center md:gap-12">
-            <a className="block text-orange-600 dark:text-orange-600" href="/">
+            <a
+              className="block text-orange-600 dark:text-orange-600"
+              href="/pets"
+            >
               <span className="sr-only">Home</span>
               <img src="/brand.png" alt="brand_logo" className="size-8" />
             </a>
           </div>
 
-          <div className="hidden md:block">
+          {/* <div className="hidden md:block">
             <nav aria-label="Global">
               <ul className="flex items-center gap-6 text-sm">
                 <li>
@@ -26,17 +29,10 @@ export const NavMenu = () => {
                   </a>
                 </li>
 
-                <li>
-                  <a
-                    className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
-                    href="#"
-                  >
-                    Blog
-                  </a>
-                </li>
+               
               </ul>
             </nav>
-          </div>
+          </div> */}
 
           <div className="flex items-center gap-4">
             {!authenticated ? (

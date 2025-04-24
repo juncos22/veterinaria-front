@@ -5,10 +5,16 @@ import { Alert } from "../../components/alert";
 import { useNavigate } from "react-router";
 import { Layout } from "../../components/layout";
 import useAuthStore from "../../store/authStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { DialogComponent } from "../../components/dialog";
+import { OwnerForm } from "../../components/owner-form";
+import useOwnerStore from "../../store/ownerStore";
 
 export default function AddPetPage() {
-  const { loading, savePet, message, error } = usePetStore();
+  const [openModal, setOpenModal] = useState(false);
+  const { loading, savePet, message, error, getPetOwners } = usePetStore();
+  const ownerState = useOwnerStore();
+
   const authState = useAuthStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -41,7 +47,7 @@ export default function AddPetPage() {
         {loading && <Loader bg="orange" color="green" size={50} />}
         <PetForm
           onSubmit={async (form) => {
-            await savePet({ ...form, ownerId: authState.authResponse.id });
+            await savePet(form);
             if (!error) {
               setTimeout(() => {
                 navigate("/pets");
@@ -49,6 +55,35 @@ export default function AddPetPage() {
             }
           }}
         />
+
+        <button
+          className="inline-block fixed bottom-0 right-0 mr-10 mb-10 rounded-full border border-orange-600 px-12 py-3 text-sm font-medium text-orange-600 hover:bg-orange-600 cursor-pointer hover:text-white focus:ring-3 focus:outline-hidden"
+          onClick={() => setOpenModal(true)}
+        >
+          Nuevo Dueño
+        </button>
+
+        <DialogComponent
+          isOpen={openModal}
+          onClose={() => setOpenModal(false)}
+          title="Nuevo Dueño"
+        >
+          <OwnerForm
+            onSubmit={async (data) => {
+              console.log(data);
+              await ownerState.saveOwner(data);
+              await getPetOwners();
+              setOpenModal(false);
+            }}
+          />
+        </DialogComponent>
+        {ownerState.error && (
+          <Alert
+            text={ownerState.error}
+            title="Owner Error"
+            extraClasses="size-10 text-black bg-red-500"
+          />
+        )}
       </div>
     </Layout>
   );
