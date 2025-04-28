@@ -26,7 +26,10 @@ export const SearchBox = ({ onSearch }: SearchBoxProps) => {
             type="button"
             aria-label="Submit"
             onClick={() => {
-              if (data.length > 0) setData("");
+              if (data.length > 0) {
+                setData("");
+                onSearch("");
+              }
             }}
             className="rounded-full p-1.5 text-orange-700 transition-colors hover:bg-orange-200 cursor-pointer"
           >

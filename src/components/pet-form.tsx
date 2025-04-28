@@ -1,25 +1,42 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { CreatePetDTO } from "../utils/types";
+import { CreatePetDTO, UpdatePetDTO } from "../utils/types";
 import { genders } from "../utils/mock/data";
 import usePetStore from "../store/petStore";
 import { Alert } from "./alert";
 // import { validateForm } from "../utils/validations/pet-form";
 
 type PetFormProps = {
-  onSubmit: (form: CreatePetDTO) => Promise<void>;
+  mode: "Create" | "Edit";
+  petId?: number;
+  onSubmit: (form: CreatePetDTO | UpdatePetDTO) => Promise<void>;
 };
 
-export const PetForm = ({ onSubmit }: PetFormProps) => {
-  const [petForm, setPetForm] = useState<CreatePetDTO>({});
-  const { breeds, getPetBreeds, getPetOwners, owners, error } = usePetStore();
-  //   const [formDisabled, setFormDisabled] = useState(true);
+export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
+  const {
+    breeds,
+    loading,
+    pet,
+    getPetBreeds,
+    getOnePet,
+    getPetOwners,
+    owners,
+    error,
+  } = usePetStore();
+  const [petForm, setPetForm] = useState<CreatePetDTO | UpdatePetDTO>({});
+
   useEffect(() => {
     getPetBreeds();
     getPetOwners();
   }, []);
 
+  useEffect(() => {
+    if (mode === "Edit" && petId) {
+      getOnePet(petId);
+    }
+  }, [petId]);
+
   const handleForm = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    console.log(e.target.name, e.target.value);
+    // console.log(e.target.name, e.target.value);
     setPetForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -31,7 +48,7 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        console.log(petForm);
+        // console.log(petForm);
         onSubmit(petForm);
       }}
       className="block rounded-md border border-gray-300 p-4 shadow-sm sm:p-6 w-fit mx-auto"
@@ -55,6 +72,8 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
               type="text"
               id="name"
               name="name"
+              placeholder={mode === "Edit" && pet ? pet.pet : ""}
+              value={petForm.name}
               required
               onChange={handleForm}
               className="mt-0.5 w-full text-center rounded border border-orange-300 shadow-sm sm:text-sm h-10"
@@ -70,7 +89,8 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
             </span>
 
             <select
-              name="genderId"
+              name="gender"
+              value={petForm.gender}
               id="Gender"
               required
               onChange={handleForm}
@@ -78,7 +98,11 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
             >
               <option value="0">Género</option>
               {genders.map((g) => (
-                <option key={g.id} value={g.id}>
+                <option
+                  key={g.id}
+                  value={g.id}
+                  selected={pet && g.id === pet.gender}
+                >
                   {g.name}
                 </option>
               ))}
@@ -103,7 +127,11 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
             >
               <option value="0">Raza</option>
               {breeds.map((b) => (
-                <option key={b.id} value={b.id}>
+                <option
+                  key={b.id}
+                  value={b.id}
+                  selected={pet && b.id === pet.breedId}
+                >
                   {b.name}
                 </option>
               ))}
@@ -125,7 +153,11 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
             >
               <option value="0">Dueño</option>
               {owners.map((o) => (
-                <option key={o.id} value={o.id}>
+                <option
+                  key={o.id}
+                  value={o.id}
+                  selected={pet && o.id === pet.ownerId}
+                >
                   {o.fullName}
                 </option>
               ))}
@@ -135,11 +167,11 @@ export const PetForm = ({ onSubmit }: PetFormProps) => {
 
         <div className="my-5">
           <button
-            // disabled={formDisabled}
+            disabled={loading}
             className="inline-block rounded-sm border border-orange-600 bg-orange-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-orange-600 focus:ring-3 focus:outline-hidden w-full transition-colors delay-75 cursor-pointer disabled:bg-orange-300 disabled:text-gray-600"
             type="submit"
           >
-            Registrar mi Mascota
+            {mode === "Create" ? `Registrar` : `Actualizar`} Mascota
           </button>
         </div>
       </dl>

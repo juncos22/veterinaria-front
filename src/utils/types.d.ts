@@ -20,8 +20,12 @@ export interface Pet {
 export interface CreatePetDTO {
   name?: string;
   breedId?: number;
-  genderId?: string;
+  gender?: string;
   ownerId?: number;
+}
+
+export interface UpdatePetDTO extends Partial<CreatePetDTO> {
+  id: number;
 }
 
 export interface PetList {
@@ -31,6 +35,9 @@ export interface PetList {
   breed: string;
   owner: string;
   medications: string[];
+
+  breedId: number;
+  ownerId: number;
 }
 
 export interface CreateMedicationDTO {

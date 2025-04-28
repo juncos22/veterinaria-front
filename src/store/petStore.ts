@@ -1,5 +1,12 @@
 import { create } from "zustand";
-import { Breed, CreatePetDTO, Owner, Pet, PetList } from "../utils/types";
+import {
+  Breed,
+  CreatePetDTO,
+  Owner,
+  Pet,
+  PetList,
+  UpdatePetDTO,
+} from "../utils/types";
 import api from "../api/config";
 
 type PetState = {
@@ -15,6 +22,8 @@ type PetState = {
   getAllPets: (data?: string) => Promise<void>;
   savePet: (data: CreatePetDTO) => Promise<void>;
   getOnePet: (id: number) => Promise<void>;
+  deletePet: (id: number) => Promise<void>;
+  updatePet: (pet: UpdatePetDTO) => Promise<void>;
 };
 
 const usePetStore = create<PetState>((set) => ({
@@ -55,6 +64,7 @@ const usePetStore = create<PetState>((set) => ({
   async savePet(data) {
     try {
       set((state) => ({ ...state, loading: true }));
+      // console.log(data);
       const response = await api.post<Pet>("/pets", data);
       set((state) => ({
         ...state,
@@ -82,14 +92,46 @@ const usePetStore = create<PetState>((set) => ({
       const { data } = await api.get(
         `/medications?petName=${response.data[0].pet}`
       );
+      // console.log(response.data[0]);
       set((state) => ({
         ...state,
         loading: false,
-        pet: { ...response.data[0], medications: data.map((m: any) => m.name) },
+        pet: {
+          ...response.data[0],
+          gender: response.data[0].gender,
+          breedId: response.data[0].breedId,
+          ownerId: response.data[0].ownerId,
+          medications: data.map((m: any) => m.name),
+        },
       }));
     } catch (error: any) {
       console.log(error);
       set((state) => ({ ...state, error: error.message, loading: false }));
+    }
+  },
+  async deletePet(id) {
+    try {
+      const response = await api.delete(`/pets/${id}`);
+      console.log("Delete response:", response.data);
+      set((state) => ({ ...state, message: "Mascota eliminada con exito!" }));
+      setTimeout(() => {
+        set((state) => ({ ...state, message: "" }));
+      }, 3000);
+    } catch (error: any) {
+      console.log(error);
+      set((state) => ({ ...state, error: error.message }));
+    }
+  },
+  async updatePet(petData) {
+    try {
+      set((state) => ({ ...state, loading: true }));
+      const { id, ...rest } = petData;
+      const response = await api.put(`/pets/${id}`, rest);
+      console.log("Update response:", response.data);
+      set((state) => ({ ...state, loading: false }));
+    } catch (error: any) {
+      console.log(error);
+      set((state) => ({ ...state, loading: false, error: error.message }));
     }
   },
 }));

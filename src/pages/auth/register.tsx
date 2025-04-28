@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   useEffect(() => {
     if (authState.authenticated) {
-      navigate("/");
+      navigate("/pets");
     }
   }, [authState.authenticated]);
 
