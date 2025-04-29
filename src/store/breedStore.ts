@@ -1,24 +1,35 @@
 import { create } from "zustand";
 import api from "../api/config";
+import { Breed, ResponseDTO } from "../utils/types";
 
 type BreedState = {
   loading: boolean;
-  error?: string;
-  message?: string;
+  breedResponse: ResponseDTO<Breed>;
   saveBreed: (data: string) => Promise<void>;
 };
 
 const useBreedStore = create<BreedState>((set) => ({
   loading: false,
+  breedResponse: {},
   async saveBreed(data) {
     try {
       set((state) => ({ ...state, loading: true }));
-      const response = await api.post(`/breeds`, { name: data });
+      const response = await api.post<ResponseDTO<Breed>>(`/breeds`, {
+        name: data,
+      });
 
-      set((state) => ({ ...state, loading: false, message: response.data }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        breedResponse: response.data,
+      }));
     } catch (error: any) {
       console.log(error);
-      set((state) => ({ ...state, loading: false, error: error.message }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        breedResponse: { success: false, message: error.message },
+      }));
     }
   },
 }));

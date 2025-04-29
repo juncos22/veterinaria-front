@@ -1,22 +1,20 @@
 import { create } from "zustand";
 import {
   Breed,
+  CreateMedicationDTO,
   CreatePetDTO,
   Owner,
-  Pet,
   PetList,
+  ResponseDTO,
   UpdatePetDTO,
 } from "../utils/types";
 import api from "../api/config";
 
 type PetState = {
-  pets: PetList[];
-  pet?: PetList;
-  breeds: Breed[];
-  owners: Owner[];
-  error?: string;
+  petResponse: ResponseDTO<PetList | CreatePetDTO | UpdatePetDTO>;
+  breedResponse: ResponseDTO<Breed>;
+  ownerResponse: ResponseDTO<Owner>;
   loading: boolean;
-  message?: string;
   getPetBreeds: () => Promise<void>;
   getPetOwners: () => Promise<void>;
   getAllPets: (data?: string) => Promise<void>;
@@ -27,111 +25,151 @@ type PetState = {
 };
 
 const usePetStore = create<PetState>((set) => ({
-  pets: [],
-  breeds: [],
-  owners: [],
+  petResponse: {},
+  breedResponse: {},
+  ownerResponse: {},
   loading: false,
   async getPetBreeds() {
     try {
-      const response = await api.get<Breed[]>(`/breeds`);
-      set((state) => ({ ...state, breeds: response.data }));
+      const response = await api.get<ResponseDTO<Breed>>(`/breeds`);
+      set((state) => ({ ...state, breedResponse: response.data }));
     } catch (error: any) {
       console.log(error.message);
-      set((state) => ({ ...state, error: error.message }));
+      set((state) => ({
+        ...state,
+        breedResponse: { success: false, message: error.message },
+      }));
     }
   },
   async getPetOwners() {
     try {
-      const response = await api.get<Owner[]>("/owners");
-      set((state) => ({ ...state, owners: response.data }));
+      const response = await api.get<ResponseDTO<Owner>>("/owners");
+      set((state) => ({ ...state, ownerResponse: response.data }));
     } catch (error: any) {
       console.log(error.message);
-      set((state) => ({ ...state, error: error.message }));
+      set((state) => ({
+        ...state,
+        ownerResponse: { success: false, message: error.message },
+      }));
     }
   },
   async getAllPets(data) {
     try {
       set((state) => ({ ...state, loading: true }));
       const params = data ? `?q=${data}` : "";
-      const response = await api.get<PetList[]>(`/pets${params}`);
-      // console.log(response.data);
-      set((state) => ({ ...state, pets: response.data, loading: false }));
+      const response = await api.get<ResponseDTO<PetList>>(`/pets${params}`);
+      set((state) => ({
+        ...state,
+        petResponse: response.data,
+        loading: false,
+      }));
     } catch (error: any) {
       console.log("PetStore -> GetAllPets Error:", error);
-      set((state) => ({ ...state, error: error.message, loading: false }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        petResponse: {
+          success: false,
+          message: error.message,
+        },
+      }));
     }
   },
   async savePet(data) {
     try {
       set((state) => ({ ...state, loading: true }));
       // console.log(data);
-      const response = await api.post<Pet>("/pets", data);
+      const response = await api.post<ResponseDTO<CreatePetDTO>>("/pets", data);
       set((state) => ({
         ...state,
         loading: false,
-        message: response.data.id
-          ? "Mascota registrada con exito!"
-          : "No se pudo registrar tu mascota!",
+        petResponse: response.data,
       }));
       setTimeout(() => {
-        set((state) => ({ ...state, message: undefined }));
+        set((state) => ({ ...state, petResponse: {} }));
       }, 5000);
     } catch (error: any) {
-      console.log(error);
       console.log("PetStore -> SavePet Error:", error);
-      set((state) => ({ ...state, error: error.message, loading: false }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        petResponse: {
+          success: false,
+          message: error.message,
+        },
+      }));
       setTimeout(() => {
-        set((state) => ({ ...state, error: undefined }));
+        set((state) => ({ ...state, petResponse: {} }));
       }, 5000);
     }
   },
   async getOnePet(id) {
     try {
       set((state) => ({ ...state, loading: true }));
-      const response = await api.get<PetList[]>(`/pets/${id}`);
-      const { data } = await api.get(
-        `/medications?petName=${response.data[0].pet}`
+      const response = await api.get<ResponseDTO<PetList>>(`/pets/${id}`);
+      const medRes = await api.get<ResponseDTO<CreateMedicationDTO>>(
+        `/medications?petName=${(response.data.data as PetList[])[0].pet}`
       );
-      // console.log(response.data[0]);
+      console.log(response.data);
       set((state) => ({
         ...state,
         loading: false,
-        pet: {
-          ...response.data[0],
-          gender: response.data[0].gender,
-          breedId: response.data[0].breedId,
-          ownerId: response.data[0].ownerId,
-          medications: data.map((m: any) => m.name),
-        },
+        petResponse: response.data,
       }));
     } catch (error: any) {
       console.log(error);
-      set((state) => ({ ...state, error: error.message, loading: false }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        petResponse: {
+          success: false,
+          message: error.message,
+        },
+      }));
     }
   },
   async deletePet(id) {
     try {
-      const response = await api.delete(`/pets/${id}`);
+      const response = await api.delete<ResponseDTO<CreatePetDTO>>(
+        `/pets/${id}`
+      );
       console.log("Delete response:", response.data);
-      set((state) => ({ ...state, message: "Mascota eliminada con exito!" }));
+      set((state) => ({ ...state, petResponse: response.data }));
       setTimeout(() => {
-        set((state) => ({ ...state, message: "" }));
+        set((state) => ({ ...state, petResponse: {} }));
       }, 3000);
     } catch (error: any) {
       console.log(error);
-      set((state) => ({ ...state, error: error.message }));
+      set((state) => ({
+        ...state,
+        petResponse: { success: false, message: error.message },
+      }));
     }
   },
   async updatePet(petData) {
     try {
       set((state) => ({ ...state, loading: true }));
       const { id, ...rest } = petData;
-      const response = await api.put(`/pets/${id}`, rest);
+      const response = await api.put<ResponseDTO<UpdatePetDTO>>(
+        `/pets/${id}`,
+        rest
+      );
       console.log("Update response:", response.data);
-      set((state) => ({ ...state, loading: false }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        petResponse: response.data,
+      }));
     } catch (error: any) {
       console.log(error);
-      set((state) => ({ ...state, loading: false, error: error.message }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        petResponse: {
+          success: false,
+          message: error.message,
+        },
+      }));
     }
   },
 }));

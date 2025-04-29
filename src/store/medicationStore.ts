@@ -1,30 +1,32 @@
 import { create } from "zustand";
-import { CreateMedicationDTO } from "../utils/types";
+import { CreateMedicationDTO, ResponseDTO } from "../utils/types";
 import api from "../api/config";
 
 type MedicationState = {
-  data?: CreateMedicationDTO;
   loading: boolean;
-  error?: string;
-  message?: string;
+  medicationResponse: ResponseDTO<CreateMedicationDTO>;
   saveMedication: (data: CreateMedicationDTO) => Promise<void>;
 };
 const useMedicationStore = create<MedicationState>((set) => ({
   loading: false,
+  medicationResponse: {},
   async saveMedication(data) {
     try {
       set((state) => ({ ...state, loading: true }));
-      const response = await api.post(`/medications`, data);
+      const response = await api.post<ResponseDTO<CreateMedicationDTO>>(
+        `/medications`,
+        data
+      );
       console.log(response.data);
       set((state) => ({
         ...state,
         loading: false,
-        message: "Medicación guardada exitosamente",
+        medicationResponse: response.data,
       }));
       setTimeout(() => {
         set((state) => ({
           ...state,
-          message: undefined,
+          medicationResponse: {},
         }));
       }, 3000);
     } catch (error: any) {
@@ -32,7 +34,7 @@ const useMedicationStore = create<MedicationState>((set) => ({
       set((state) => ({
         ...state,
         loading: false,
-        error: error.message,
+        medicationResponse: { success: false, message: error.message },
       }));
     }
   },

@@ -8,10 +8,10 @@ import { Loader } from "../../components/loader";
 import { DialogComponent } from "../../components/dialog";
 import { Alert } from "../../components/alert";
 import { PetForm } from "../../components/pet-form";
-import { UpdatePetDTO } from "../../utils/types";
+import { PetList } from "../../utils/types";
 
 export default function PetsPage() {
-  const { loading, getAllPets, pets, message, error, deletePet, updatePet } =
+  const { loading, petResponse, getAllPets, deletePet, updatePet } =
     usePetStore();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
@@ -30,36 +30,38 @@ export default function PetsPage() {
           }}
         />
         {loading && <Loader bg="orange" color="orange" size={80} />}
-        <div className="flex flex-wrap items-center justify-evenly gap-x-3 gap-y-5 my-4">
-          {pets.map((p) => (
-            <Card
-              key={p.id}
-              pet={p}
-              onEdit={(id) => {
-                setIdPet((_) => id);
-                setOpenUpdateModal(true);
-              }}
-              onDelete={async (id) => {
-                setIdPet(id);
-                setOpenDeleteModal(true);
-              }}
-            />
-          ))}
-        </div>
-        {error && (
+        {!petResponse.success && petResponse.message && (
           <Alert
             title="Error"
-            text={error}
+            text={petResponse.message}
             extraClasses="size-10 text-black bg-red"
           />
         )}
-        {message && (
+        {petResponse.success && petResponse.message && (
           <Alert
             title="Success"
-            text={message}
+            text={petResponse.message}
             extraClasses="size-10 text-black bg-green"
           />
         )}
+        <div className="flex flex-wrap items-center justify-evenly gap-x-3 gap-y-5 my-4">
+          {petResponse.data &&
+            (petResponse.data as PetList[]).map((p) => (
+              <Card
+                key={p.id}
+                pet={p}
+                onEdit={(id) => {
+                  setIdPet((_) => id);
+                  setOpenUpdateModal(true);
+                }}
+                onDelete={async (id) => {
+                  setIdPet(id);
+                  setOpenDeleteModal(true);
+                }}
+              />
+            ))}
+        </div>
+
         <DialogComponent
           isOpen={openDeleteModal}
           onClose={() => {

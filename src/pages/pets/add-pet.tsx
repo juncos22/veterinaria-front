@@ -15,8 +15,13 @@ export default function AddPetPage() {
   const [openOwnerModal, setOpenOwnerModal] = useState(false);
   const [openBreedModal, setOpenBreedModal] = useState(false);
   const [breed, setBreed] = useState("");
-  const { loading, savePet, message, error, getPetOwners, getPetBreeds } =
-    usePetStore();
+  const {
+    loading,
+    petResponse: { success, message },
+    savePet,
+    getPetOwners,
+    getPetBreeds,
+  } = usePetStore();
   const ownerState = useOwnerStore();
   const breedState = useBreedStore();
   const authState = useAuthStore();
@@ -49,17 +54,17 @@ export default function AddPetPage() {
             Nueva Raza
           </button>
         </div>
-        {message && (
+        {success && message && (
           <Alert
             extraClasses="bg-green-500 text-black size-10"
             text={message}
             title="Registro de mascota"
           />
         )}
-        {error && (
+        {!success && message && (
           <Alert
             extraClasses="bg-red-500 text-black size-10"
-            text={error}
+            text={message}
             title="Error"
           />
         )}
@@ -73,7 +78,7 @@ export default function AddPetPage() {
               gender: form.gender,
               ownerId: form.ownerId,
             });
-            if (!error) {
+            if (success && message) {
               setTimeout(() => {
                 navigate("/pets");
               }, 2000);
@@ -136,23 +141,25 @@ export default function AddPetPage() {
               </span>
             </button>
 
-            {breedState.error && (
-              <Alert
-                text={breedState.error}
-                title="Owner Error"
-                extraClasses="size-10 text-black bg-red-500"
-              />
-            )}
+            {!breedState.breedResponse.success &&
+              breedState.breedResponse.message && (
+                <Alert
+                  text={breedState.breedResponse.message}
+                  title="Owner Error"
+                  extraClasses="size-10 text-black bg-red-500"
+                />
+              )}
           </form>
         </DialogComponent>
 
-        {ownerState.error && (
-          <Alert
-            text={ownerState.error}
-            title="Owner Error"
-            extraClasses="size-10 text-black bg-red-500"
-          />
-        )}
+        {!ownerState.ownerResponse.success &&
+          ownerState.ownerResponse.message && (
+            <Alert
+              text={ownerState.ownerResponse.message}
+              title="Owner Error"
+              extraClasses="size-10 text-black bg-red-500"
+            />
+          )}
       </div>
     </Layout>
   );

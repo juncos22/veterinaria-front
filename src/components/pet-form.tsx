@@ -1,5 +1,11 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { CreatePetDTO, UpdatePetDTO } from "../utils/types";
+import {
+  Breed,
+  CreatePetDTO,
+  Owner,
+  PetList,
+  UpdatePetDTO,
+} from "../utils/types";
 import { genders } from "../utils/mock/data";
 import usePetStore from "../store/petStore";
 import { Alert } from "./alert";
@@ -13,14 +19,13 @@ type PetFormProps = {
 
 export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
   const {
-    breeds,
+    breedResponse: { data: breeds },
+    ownerResponse: { data: owners },
+    petResponse: { data, message, success },
     loading,
-    pet,
     getPetBreeds,
     getOnePet,
     getPetOwners,
-    owners,
-    error,
   } = usePetStore();
   const [petForm, setPetForm] = useState<CreatePetDTO | UpdatePetDTO>({});
 
@@ -72,9 +77,13 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
               type="text"
               id="name"
               name="name"
-              placeholder={mode === "Edit" && pet ? pet.pet : ""}
+              placeholder={
+                mode === "Edit" && (data as PetList)
+                  ? (data as PetList[])[0].pet
+                  : ""
+              }
               value={petForm.name}
-              required
+              required={mode !== "Edit"}
               onChange={handleForm}
               className="mt-0.5 w-full text-center rounded border border-orange-300 shadow-sm sm:text-sm h-10"
             />
@@ -92,7 +101,7 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
               name="gender"
               value={petForm.gender}
               id="Gender"
-              required
+              required={mode !== "Edit"}
               onChange={handleForm}
               className="mt-0.5 w-full text-center h-10 rounded border border-orange-300 shadow-sm sm:text-sm"
             >
@@ -101,7 +110,9 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
                 <option
                   key={g.id}
                   value={g.id}
-                  selected={pet && g.id === pet.gender}
+                  selected={
+                    (data as PetList) && g.id === (data as PetList[])[0].gender
+                  }
                 >
                   {g.name}
                 </option>
@@ -120,21 +131,25 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
             <select
               name="breedId"
               id="Breed"
-              required
+              required={mode !== "Edit"}
               value={petForm.breedId}
               onChange={handleForm}
               className="mt-0.5 w-full text-center h-10 rounded border border-orange-300 shadow-sm sm:text-sm"
             >
               <option value="0">Raza</option>
-              {breeds.map((b) => (
-                <option
-                  key={b.id}
-                  value={b.id}
-                  selected={pet && b.id === pet.breedId}
-                >
-                  {b.name}
-                </option>
-              ))}
+              {breeds &&
+                (breeds as Breed[]).map((b) => (
+                  <option
+                    key={b.id}
+                    value={b.id}
+                    selected={
+                      (data as PetList) &&
+                      b.id === (data as PetList[])[0].breedId
+                    }
+                  >
+                    {b.name}
+                  </option>
+                ))}
             </select>
           </label>
         </div>
@@ -146,21 +161,25 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
             <select
               name="ownerId"
               id="Owner"
-              required
+              required={mode !== "Edit"}
               value={petForm.ownerId}
               onChange={handleForm}
               className="mt-0.5 w-full text-center h-10 rounded border border-orange-300 shadow-sm sm:text-sm"
             >
               <option value="0">Dueño</option>
-              {owners.map((o) => (
-                <option
-                  key={o.id}
-                  value={o.id}
-                  selected={pet && o.id === pet.ownerId}
-                >
-                  {o.fullName}
-                </option>
-              ))}
+              {owners &&
+                (owners as Owner[]).map((o) => (
+                  <option
+                    key={o.id}
+                    value={o.id}
+                    selected={
+                      (data as PetList) &&
+                      o.id === (data as PetList[])[0].ownerId
+                    }
+                  >
+                    {o.fullName}
+                  </option>
+                ))}
             </select>
           </label>
         </div>
@@ -175,8 +194,8 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
           </button>
         </div>
       </dl>
-      {error && (
-        <Alert title="Error" text={error} extraClasses="size-8 color-red" />
+      {success && message && (
+        <Alert title="Error" text={message} extraClasses="size-8 color-red" />
       )}
     </form>
   );

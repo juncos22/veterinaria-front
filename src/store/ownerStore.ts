@@ -1,28 +1,32 @@
 import { create } from "zustand";
-import { Owner } from "../utils/types";
+import { Owner, ResponseDTO } from "../utils/types";
 import api from "../api/config";
 
 type OwnerState = {
   loading: boolean;
-  error?: string;
-  message?: string;
+  ownerResponse: ResponseDTO<Owner>;
   saveOwner: (data: Owner) => Promise<void>;
 };
 const useOwnerStore = create<OwnerState>((set) => ({
   loading: false,
+  ownerResponse: {},
   async saveOwner(data) {
     try {
       set((state) => ({ ...state, loading: true }));
-      const response = await api.post(`/owners`, data);
+      const response = await api.post<ResponseDTO<Owner>>(`/owners`, data);
       console.log(response.data);
       set((state) => ({
         ...state,
         loading: false,
-        message: response.data.message,
+        ownerResponse: response.data,
       }));
     } catch (error: any) {
       console.log(error);
-      set((state) => ({ ...state, error: error.message, loading: false }));
+      set((state) => ({
+        ...state,
+        loading: false,
+        ownerResponse: { success: false, message: error.message },
+      }));
     }
   },
 }));

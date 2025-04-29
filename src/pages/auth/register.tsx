@@ -24,10 +24,10 @@ export default function RegisterPage() {
           }}
         />
         {authState.loading && <Loader bg="black" color="orange" size={10} />}
-        {authState.error && (
+        {!authState.authResponse.success && authState.authResponse.message && (
           <Alert
             title="Login Error"
-            text={authState.error}
+            text={authState.authResponse.message}
             extraClasses="size-10 mx-auto"
           />
         )}
