@@ -9,10 +9,12 @@ import { DialogComponent } from "../../components/dialog";
 import { Alert } from "../../components/alert";
 import { PetForm } from "../../components/pet-form";
 import { PetList } from "../../utils/types";
+import useAuthStore from "../../store/authStore";
 
 export default function PetsPage() {
   const { loading, petResponse, getAllPets, deletePet, updatePet } =
     usePetStore();
+  const { authenticated } = useAuthStore();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [idPet, setIdPet] = useState(0);
@@ -46,6 +48,7 @@ export default function PetsPage() {
         )}
         <div className="flex flex-wrap items-center justify-evenly gap-x-3 gap-y-5 my-4">
           {petResponse.data &&
+            (petResponse.data as PetList[]).length > 0 &&
             (petResponse.data as PetList[]).map((p) => (
               <Card
                 key={p.id}
@@ -135,7 +138,7 @@ export default function PetsPage() {
           </div>
         </DialogComponent>
 
-        {idPet && (
+        {idPet > 0 && idPet !== undefined && (
           <DialogComponent
             isOpen={openUpdateModal}
             onClose={() => setOpenUpdateModal(false)}
@@ -159,14 +162,16 @@ export default function PetsPage() {
             />
           </DialogComponent>
         )}
-        <a
-          className="fixed right-0 mr-5 group inline-block rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 p-[2px] hover:text-white focus:ring-3 focus:outline-hidden"
-          href="/pets/new"
-        >
-          <span className="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent">
-            Nueva Mascota
-          </span>
-        </a>
+        {authenticated && (
+          <a
+            className="fixed right-0 mr-5 group inline-block rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-yellow-500 p-[2px] hover:text-white focus:ring-3 focus:outline-hidden"
+            href="/pets/new"
+          >
+            <span className="block rounded-full bg-white px-8 py-3 text-sm font-medium group-hover:bg-transparent">
+              Nueva Mascota
+            </span>
+          </a>
+        )}
       </>
     </Layout>
   );

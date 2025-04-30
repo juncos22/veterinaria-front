@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router";
 import useAuthStore from "../store/authStore";
 
 export const NavMenu = () => {
   const { authenticated, signOut } = useAuthStore();
+  const navigate = useNavigate();
 
   return (
     <header className="bg-orange-500 dark:bg-orange-900">
@@ -49,6 +51,7 @@ export const NavMenu = () => {
                 <button
                   onClick={() => {
                     signOut();
+                    navigate("/");
                   }}
                   className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm dark:hover:bg-teal-500 cursor-pointer"
                 >

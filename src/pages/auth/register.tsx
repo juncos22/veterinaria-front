@@ -23,7 +23,12 @@ export default function RegisterPage() {
             await authState.register(data);
           }}
         />
-        {authState.loading && <Loader bg="black" color="orange" size={10} />}
+        {authState.loading && (
+          <Loader
+            additionalClasses1="size-10 bg-transparent"
+            additionalClasses2="text-orange-500"
+          />
+        )}
         {!authState.authResponse.success && authState.authResponse.message && (
           <Alert
             title="Login Error"

@@ -1,10 +1,8 @@
 import { create } from "zustand";
 import {
   Breed,
-  CreateMedicationDTO,
   CreatePetDTO,
   Owner,
-  PetDetail,
   PetList,
   ResponseDTO,
   UpdatePetDTO,
@@ -13,7 +11,7 @@ import api from "../api/config";
 
 type PetState = {
   petResponse: ResponseDTO<PetList | CreatePetDTO | UpdatePetDTO>;
-  petDetail?: PetDetail;
+  petDetail?: PetList;
   breedResponse: ResponseDTO<Breed>;
   ownerResponse: ResponseDTO<Owner>;
   loading: boolean;
@@ -106,38 +104,14 @@ const usePetStore = create<PetState>((set) => ({
     }
   },
   async getOnePet(id) {
-    let medications: string[] = [];
-    let pet: PetDetail;
     try {
       set((state) => ({ ...state, loading: true }));
       const response = await api.get<ResponseDTO<PetList>>(`/pets/${id}`);
-      // console.log(response.data);
-      if (response.data.data) {
-        const medRes = await api.get<ResponseDTO<CreateMedicationDTO>>(
-          `/medications?petName=${(response.data.data as PetList[])[0].pet}`
-        );
-        // console.log(medRes.data);
-        if (medRes.data.data) {
-          medications = (medRes.data.data as CreateMedicationDTO[]).map(
-            (m) => m.name!
-          );
-        }
-        pet = {
-          pet: (response.data.data as PetList[])[0].pet,
-          breedId: (response.data.data as PetList[])[0].breedId,
-          gender: (response.data.data as PetList[])[0].gender,
-          ownerId: (response.data.data as PetList[])[0].ownerId,
-          id: (response.data.data as PetList[])[0].id,
-          breed: (response.data.data as PetList[])[0].breed,
-          owner: (response.data.data as PetList[])[0].owner,
-          medications: medications,
-        };
-      }
-
+      console.log("Data:", response.data);
       set((state) => ({
         ...state,
         loading: false,
-        petDetail: pet,
+        petDetail: response.data.data as PetList,
       }));
     } catch (error: any) {
       console.log(error);

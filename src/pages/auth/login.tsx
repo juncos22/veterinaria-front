@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { LoginLayout } from "../../components/login-layout";
 import { LoginForm } from "../../components/login-form";
 import useAuthStore from "../../store/authStore";
@@ -23,7 +23,12 @@ export default function LoginPage() {
             await authState.login(form);
           }}
         />
-        {authState.loading && <Loader bg="black" color="orange" size={10} />}
+        {authState.loading && (
+          <Loader
+            additionalClasses1="size-10 bg-transparent"
+            additionalClasses2="text-orange-500"
+          />
+        )}
         {!authState.authResponse.success && authState.authResponse.message && (
           <Alert
             title="Login Error"

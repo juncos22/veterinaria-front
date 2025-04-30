@@ -8,19 +8,23 @@ import { DialogComponent } from "../../components/dialog";
 import { MedicationForm } from "../../components/medication-form";
 import useMedicationStore from "../../store/medicationStore";
 import useAuthStore from "../../store/authStore";
-import { PetList } from "../../utils/types";
 
 export default function PetDetailsPage() {
-  const { petResponse, loading, getOnePet } = usePetStore();
+  const {
+    petDetail,
+    petResponse: { success, message },
+    loading,
+    getOnePet,
+  } = usePetStore();
   const {
     loading: loading2,
     saveMedication,
-    medicationResponse: { message, success },
+    medicationResponse,
   } = useMedicationStore();
   const { authenticated } = useAuthStore();
-  const params = useParams();
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
+  const params = useParams();
 
   useEffect(() => {
     if (!authenticated) {
@@ -29,20 +33,27 @@ export default function PetDetailsPage() {
     if (params.id) {
       getOnePet(parseInt(params.id));
     }
-  }, [params.id]);
+  }, [params.id, authenticated]);
 
   return (
     <Layout>
       <>
-        {loading && <Loader bg="orange" color="green" size={50} />}
-        {!petResponse.success && petResponse.message && (
-          <Alert
-            extraClasses="bg-red-500 text-black size-10"
-            text={petResponse.message}
-            title="Error"
+        {loading && (
+          <Loader
+            additionalClasses1="size-10 bg-transparent"
+            additionalClasses2="text-orange-500"
           />
         )}
-        {petResponse.data && (
+        {message && (
+          <Alert
+            extraClasses={`bg-${
+              success ? "green" : "red"
+            }-500 text-black size-10`}
+            text={message}
+            title={success ? "Exito" : "Error"}
+          />
+        )}
+        {petDetail && (
           <div>
             <h3 className="text-3xl text-orange-800 text-center">
               Datos de la Mascota
@@ -51,41 +62,40 @@ export default function PetDetailsPage() {
               <div className="flex flex-col items-center md:items-start w-fit ml-10 mt-3">
                 <div>
                   <span className="text-orange-500 font-bold">Nombre: </span>{" "}
-                  <span>{(petResponse.data as PetList).pet}</span>
+                  <span>{petDetail.pet}</span>
                 </div>
                 <div>
                   <span className="text-orange-500 font-bold">Género:</span>{" "}
                   <span>
-                    {(petResponse.data as PetList).gender === "M"
-                      ? "Masculino"
-                      : "Femenino"}
+                    {petDetail.gender === "M" ? "Masculino" : "Femenino"}
                   </span>
                 </div>
                 <div>
                   <span className="text-orange-500 font-bold">Raza:</span>{" "}
-                  <span>{(petResponse.data as PetList).breed}</span>
+                  <span>{petDetail.breed}</span>
                 </div>
                 <div>
                   <span className="text-orange-500 font-bold">Dueño: </span>{" "}
-                  <span>{(petResponse.data as PetList).owner}</span>
+                  <span>{petDetail.owner}</span>
                 </div>
               </div>
               <div className="flex flex-col items-center md:items-end w-fit mr-10 mt-3">
                 <span className="text-xl">Medicación/es: </span>
-                {(petResponse.data as PetList).medications &&
-                (petResponse.data as PetList).medications.length > 0 ? (
+                {petDetail.medications.length > 0 && (
                   <div className="flex flex-wrap">
-                    {(petResponse.data as PetList).medications.map((m) => (
-                      <span
-                        key={m}
-                        className="rounded-full my-3 bg-orange-100 px-2.5 py-0.5 text-sm whitespace-nowrap text-orange-700"
-                      >
-                        {m}
-                      </span>
-                    ))}
+                    {petDetail.medications.map((m) =>
+                      m.id != null && m.name != null ? (
+                        <span
+                          key={m.id}
+                          className="rounded-full my-3 bg-orange-100 px-2.5 py-0.5 text-sm whitespace-nowrap text-orange-700"
+                        >
+                          {m.name}
+                        </span>
+                      ) : (
+                        <span>No tiene</span>
+                      )
+                    )}
                   </div>
-                ) : (
-                  <span>No tiene</span>
                 )}
               </div>
             </div>
@@ -106,31 +116,31 @@ export default function PetDetailsPage() {
         >
           <MedicationForm
             onSubmit={async (form) => {
-              form = { ...form, petId: (petResponse.data as PetList)?.id };
+              form = { ...form, petId: petDetail?.id };
               // console.log(form);
               setOpenModal(false);
               await saveMedication(form);
-              if (success && message) {
-                if ((petResponse.data as PetList)?.id) {
-                  getOnePet((petResponse.data as PetList)?.id);
-                }
-              }
+              await getOnePet(petDetail?.id!);
             }}
           />
         </DialogComponent>
-        {loading2 && <Loader bg="orange" color="black" size={30} />}
-        {!success && message && (
-          <Alert
-            extraClasses="size-10 bg-red-500 text-black"
-            text={message}
-            title="Error"
+        {loading2 && (
+          <Loader
+            additionalClasses1="size-10 bg-transparent"
+            additionalClasses2="text-orange-500"
           />
         )}
-        {success && message && (
+        {medicationResponse.message && (
           <Alert
-            extraClasses="size-10 bg-green-500 text-black"
-            text={message}
-            title="Exito"
+            extraClasses={`size-10 bg-${
+              medicationResponse.success === true ? "green" : "red"
+            }-500 text-black`}
+            text={medicationResponse.message}
+            title={
+              medicationResponse.success && medicationResponse.success === true
+                ? "Exito"
+                : "Error"
+            }
           />
         )}
       </>

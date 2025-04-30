@@ -1,11 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import {
-  Breed,
-  CreatePetDTO,
-  Owner,
-  PetList,
-  UpdatePetDTO,
-} from "../utils/types";
+import { Breed, CreatePetDTO, Owner, UpdatePetDTO } from "../utils/types";
 import { genders } from "../utils/mock/data";
 import usePetStore from "../store/petStore";
 
@@ -19,7 +13,6 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
   const {
     breedResponse: { data: breeds },
     ownerResponse: { data: owners },
-    petResponse: { data },
     petDetail,
     loading,
     getPetBreeds,
