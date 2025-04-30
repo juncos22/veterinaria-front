@@ -14,16 +14,18 @@ Esta aplicación web consume lo que sería el API REST de [Veterinaria-API](http
 3. Página de Listado de Mascotas (con busqueda) ✅
 4. Página para Registrar una Mascota ✅
 5. Página Detalles de una Mascota (Visualización de datos completos como Nombre, Raza, Género, Dueño, Medicaciones [si las tiene]) ✅
-6. Página Registro de Usuarios ✖️
-7. Página Login de Usuarios ✖️
-8. Manejo de sesiones de usuario ✖️
+6. Página Registro de Usuarios ✅
+7. Página Login de Usuarios ✅
+8. Manejo de sesiones de usuario ✅
 
 ## Project setup
+
 ```bash
 $ pnpm install
 ```
 
 ## Compile and run the project
+
 ```bash
 # development
 $ pnpm run dev
