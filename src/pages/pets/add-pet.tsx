@@ -54,21 +54,21 @@ export default function AddPetPage() {
             Nueva Raza
           </button>
         </div>
-        {success && message && (
+        {message && (
           <Alert
-            extraClasses="bg-green-500 text-black size-10"
+            extraClasses={`text-black size-10 ${
+              success ? "bg-green-500" : "bg-red-500"
+            }`}
             text={message}
-            title="Registro de mascota"
+            title={success ? "Exito" : "Error"}
           />
         )}
-        {!success && message && (
-          <Alert
-            extraClasses="bg-red-500 text-black size-10"
-            text={message}
-            title="Error"
+        {loading && (
+          <Loader
+            additionalClasses1="bg-transparent h-fit"
+            additionalClasses2="text-orange-500"
           />
         )}
-        {loading && <Loader bg="orange" color="green" size={50} />}
         <PetForm
           mode="Create"
           onSubmit={async (form) => {
@@ -78,11 +78,6 @@ export default function AddPetPage() {
               gender: form.gender,
               ownerId: form.ownerId,
             });
-            if (success && message) {
-              setTimeout(() => {
-                navigate("/pets");
-              }, 2000);
-            }
           }}
         />
 
@@ -141,25 +136,29 @@ export default function AddPetPage() {
               </span>
             </button>
 
-            {!breedState.breedResponse.success &&
-              breedState.breedResponse.message && (
-                <Alert
-                  text={breedState.breedResponse.message}
-                  title="Owner Error"
-                  extraClasses="size-10 text-black bg-red-500"
-                />
-              )}
+            {breedState.breedResponse.message && (
+              <Alert
+                text={breedState.breedResponse.message}
+                title={breedState.breedResponse.success ? "Exito" : "Error"}
+                extraClasses={`size-10 text-black ${
+                  breedState.breedResponse.success
+                    ? "bg-green-500"
+                    : "bg-red-500"
+                }`}
+              />
+            )}
           </form>
         </DialogComponent>
 
-        {!ownerState.ownerResponse.success &&
-          ownerState.ownerResponse.message && (
-            <Alert
-              text={ownerState.ownerResponse.message}
-              title="Owner Error"
-              extraClasses="size-10 text-black bg-red-500"
-            />
-          )}
+        {ownerState.ownerResponse.message && (
+          <Alert
+            text={ownerState.ownerResponse.message}
+            title={ownerState.ownerResponse.success ? "Exito" : "Error"}
+            extraClasses={`size-10 text-black ${
+              ownerState.ownerResponse.success ? "bg-green-500" : "bg-red-500"
+            }`}
+          />
+        )}
       </div>
     </Layout>
   );

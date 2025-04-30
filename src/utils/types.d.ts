@@ -34,6 +34,17 @@ export interface PetList {
   gender: string;
   breed: string;
   owner: string;
+
+  breedId: number;
+  ownerId: number;
+}
+
+export interface PetDetail {
+  id: number;
+  pet: string;
+  gender: string;
+  breed: string;
+  owner: string;
   medications: string[];
 
   breedId: number;

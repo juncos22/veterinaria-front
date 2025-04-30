@@ -29,19 +29,19 @@ export default function PetsPage() {
             getAllPets(data);
           }}
         />
-        {loading && <Loader bg="orange" color="orange" size={80} />}
-        {!petResponse.success && petResponse.message && (
-          <Alert
-            title="Error"
-            text={petResponse.message}
-            extraClasses="size-10 text-black bg-red"
+        {loading && (
+          <Loader
+            additionalClasses1="bg-transparent h-fit"
+            additionalClasses2="text-orange-500"
           />
         )}
-        {petResponse.success && petResponse.message && (
+        {petResponse.message && (
           <Alert
-            title="Success"
+            title={petResponse.success ? "Exito" : "Error"}
             text={petResponse.message}
-            extraClasses="size-10 text-black bg-green"
+            extraClasses={`size-10 text-black ${
+              petResponse.success ? "bg-green-500" : "bg-red-500"
+            }`}
           />
         )}
         <div className="flex flex-wrap items-center justify-evenly gap-x-3 gap-y-5 my-4">

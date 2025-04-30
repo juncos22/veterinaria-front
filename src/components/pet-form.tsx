@@ -8,8 +8,6 @@ import {
 } from "../utils/types";
 import { genders } from "../utils/mock/data";
 import usePetStore from "../store/petStore";
-import { Alert } from "./alert";
-// import { validateForm } from "../utils/validations/pet-form";
 
 type PetFormProps = {
   mode: "Create" | "Edit";
@@ -21,7 +19,8 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
   const {
     breedResponse: { data: breeds },
     ownerResponse: { data: owners },
-    petResponse: { data, message, success },
+    petResponse: { data },
+    petDetail,
     loading,
     getPetBreeds,
     getOnePet,
@@ -38,8 +37,11 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
     if (mode === "Edit" && petId) {
       getOnePet(petId);
     }
-  }, [petId]);
 
+    return () => {
+      setPetForm({ name: "", breedId: 0, gender: "", ownerId: 0, id: 0 });
+    };
+  }, [petId, mode]);
   const handleForm = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     // console.log(e.target.name, e.target.value);
     setPetForm((prev) => ({
@@ -55,6 +57,7 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
         e.preventDefault();
         // console.log(petForm);
         onSubmit(petForm);
+        setPetForm({ name: "", breedId: 0, gender: "", ownerId: 0, id: 0 });
       }}
       className="block rounded-md border border-gray-300 p-4 shadow-sm sm:p-6 w-fit mx-auto"
     >
@@ -77,11 +80,7 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
               type="text"
               id="name"
               name="name"
-              placeholder={
-                mode === "Edit" && (data as PetList)
-                  ? (data as PetList[])[0].pet
-                  : ""
-              }
+              placeholder={mode === "Edit" && petDetail ? petDetail.pet : ""}
               value={petForm.name}
               required={mode !== "Edit"}
               onChange={handleForm}
@@ -110,9 +109,7 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
                 <option
                   key={g.id}
                   value={g.id}
-                  selected={
-                    (data as PetList) && g.id === (data as PetList[])[0].gender
-                  }
+                  selected={petDetail && g.id === petDetail?.gender}
                 >
                   {g.name}
                 </option>
@@ -142,10 +139,7 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
                   <option
                     key={b.id}
                     value={b.id}
-                    selected={
-                      (data as PetList) &&
-                      b.id === (data as PetList[])[0].breedId
-                    }
+                    selected={petDetail && b.id === petDetail.breedId}
                   >
                     {b.name}
                   </option>
@@ -172,10 +166,7 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
                   <option
                     key={o.id}
                     value={o.id}
-                    selected={
-                      (data as PetList) &&
-                      o.id === (data as PetList[])[0].ownerId
-                    }
+                    selected={petDetail && o.id === petDetail.ownerId}
                   >
                     {o.fullName}
                   </option>
@@ -194,9 +185,6 @@ export const PetForm = ({ mode, petId, onSubmit }: PetFormProps) => {
           </button>
         </div>
       </dl>
-      {success && message && (
-        <Alert title="Error" text={message} extraClasses="size-8 color-red" />
-      )}
     </form>
   );
 };

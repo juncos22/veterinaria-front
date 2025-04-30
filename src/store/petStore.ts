@@ -4,6 +4,7 @@ import {
   CreateMedicationDTO,
   CreatePetDTO,
   Owner,
+  PetDetail,
   PetList,
   ResponseDTO,
   UpdatePetDTO,
@@ -12,6 +13,7 @@ import api from "../api/config";
 
 type PetState = {
   petResponse: ResponseDTO<PetList | CreatePetDTO | UpdatePetDTO>;
+  petDetail?: PetDetail;
   breedResponse: ResponseDTO<Breed>;
   ownerResponse: ResponseDTO<Owner>;
   loading: boolean;
@@ -104,17 +106,38 @@ const usePetStore = create<PetState>((set) => ({
     }
   },
   async getOnePet(id) {
+    let medications: string[] = [];
+    let pet: PetDetail;
     try {
       set((state) => ({ ...state, loading: true }));
       const response = await api.get<ResponseDTO<PetList>>(`/pets/${id}`);
-      const medRes = await api.get<ResponseDTO<CreateMedicationDTO>>(
-        `/medications?petName=${(response.data.data as PetList[])[0].pet}`
-      );
-      console.log(response.data);
+      // console.log(response.data);
+      if (response.data.data) {
+        const medRes = await api.get<ResponseDTO<CreateMedicationDTO>>(
+          `/medications?petName=${(response.data.data as PetList[])[0].pet}`
+        );
+        // console.log(medRes.data);
+        if (medRes.data.data) {
+          medications = (medRes.data.data as CreateMedicationDTO[]).map(
+            (m) => m.name!
+          );
+        }
+        pet = {
+          pet: (response.data.data as PetList[])[0].pet,
+          breedId: (response.data.data as PetList[])[0].breedId,
+          gender: (response.data.data as PetList[])[0].gender,
+          ownerId: (response.data.data as PetList[])[0].ownerId,
+          id: (response.data.data as PetList[])[0].id,
+          breed: (response.data.data as PetList[])[0].breed,
+          owner: (response.data.data as PetList[])[0].owner,
+          medications: medications,
+        };
+      }
+
       set((state) => ({
         ...state,
         loading: false,
-        petResponse: response.data,
+        petDetail: pet,
       }));
     } catch (error: any) {
       console.log(error);
@@ -136,7 +159,10 @@ const usePetStore = create<PetState>((set) => ({
       console.log("Delete response:", response.data);
       set((state) => ({ ...state, petResponse: response.data }));
       setTimeout(() => {
-        set((state) => ({ ...state, petResponse: {} }));
+        set((state) => ({
+          ...state,
+          petResponse: { ...response.data, message: "" },
+        }));
       }, 3000);
     } catch (error: any) {
       console.log(error);
